@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "Ad Fallback Screenshot",
+  "description": "Takes a screenshot of the ad on page, resizes it to the ad-size (meta tag) if need be, compresses and saves as a fallback image",
+  "version": "1.0",
+  "browser_action": {
+   "default_icon": "icon-48.png"
+  },
+  "icons": { 
+	  "16": "icon-16.png",
+	  "18": "icon-18.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  "background": {
+    "scripts": ["html2canvas.min.js", "main.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ], 
+  "permissions": [
+   "activeTab"
+  ]
+}
