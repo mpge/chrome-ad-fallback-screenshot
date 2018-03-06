@@ -24,6 +24,16 @@ function afsGetMetaContents(mn, callback){
 	});
 }
 
+function cropImage(imgSrc, imgWidth, imgHeight) {
+	var cropCode = 'var dpr = window.devicePixelRatio;var scaleRatio = (1 / dpr);var canvasElement = document.createElement("canvas");canvasElement.id = "CanvasLayer";canvasElement.style="display:none";canvasElement.width = ' + imgWidth + ';canvasElement.height = ' + imgHeight + ';document.body.appendChild(canvasElement);var canvas = document.getElementById("CanvasLayer");var ctx = canvas.getContext("2d");var image = new Image();image.onload = function() {ctx.scale(scaleRatio, scaleRatio);ctx.drawImage(image, 0, 0);var html="<img src=\'"+canvas.toDataURL(\'image/jpeg\')+"\' alt=\'from canvas\'/>";var tab=window.open();tab.document.write(html);tab.document.execCommand("saveAs", true, ".jpg");};image.src = "' + imgSrc + '";';
+
+	chrome.tabs.executeScript({
+	  code: cropCode
+	}, function(results) {
+		
+	});
+}
+
 function afsGetScreenshot() {
 	afsGetMetaContents('ad.size', function(adSize) {
 		// Parse it.
@@ -35,15 +45,19 @@ function afsGetScreenshot() {
 		adWidth = parseInt(adWidth.replace('width=', ''));
 		adHeight = parseInt(adHeight.replace('height=', ''));
 		
+		var dimensions = {
+			width: adWidth,
+			height: adHeight,
+			left: 0,
+			top: 0
+		};
+		
 		if(adWidth > 0 && adHeight > 0) {
 			// get the first container
-			var firstContainerAd = document.body.children[0];
-			
-			alert(firstContainerAd);
-			
-			if(firstContainerAd != null && firstContainerAd != false) {
-				window.AFSImageGenerator(firstContainerAd); // on screen.
-			}
+			// use captureVisualTab to capture the entire site, and then crop to the ad size
+			chrome.tabs.captureVisibleTab(null, {format: 'jpeg'}, function(screenshot) {
+				cropImage(screenshot, adWidth, adHeight);
+			});
 		}
 	});
 }
