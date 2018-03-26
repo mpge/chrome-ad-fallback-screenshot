@@ -5,6 +5,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 function afsGetMetaContents(mn, callback){
   var code = 'var meta = document.querySelector("meta[name=\'' + mn + '\']");' + 
            'if (meta) meta = meta.getAttribute("content");' +
+           'if (!(meta)) meta = document.getElementById("banner-wrap").offsetWidth + "," + document.getElementById("banner-wrap").offsetHeight;' + 
            '({' +
            '    mn: meta || ""' +
            '});';
